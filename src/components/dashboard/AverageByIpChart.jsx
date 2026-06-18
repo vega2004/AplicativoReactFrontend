@@ -9,10 +9,10 @@ import {
   Legend,
 } from 'recharts';
 
-export const RecordsByIpChart = ({ data }) => {
+export const AverageByIpChart = ({ data }) => {
   return (
-    <div className="chart-card">
-      <h2>Registros por IP</h2>
+    <div className="chart-card full-width">
+      <h2>Promedio por IP</h2>
 
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data || []}>
@@ -21,7 +21,14 @@ export const RecordsByIpChart = ({ data }) => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="total" name="Total registros" />
+          <Bar
+            dataKey="temperaturaPromedio"
+            name="Temperatura promedio"
+          />
+          <Bar
+            dataKey="humedadPromedio"
+            name="Humedad promedio"
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>
