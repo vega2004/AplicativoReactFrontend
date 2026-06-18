@@ -110,8 +110,10 @@ button:active {
 
 /* Layout general */
 .page {
-  min-height: 100vh;
-  padding: 32px;
+  width: 100%;
+  max-width: 1400px;
+  padding: 24px;
+  margin: 0 auto;
 }
 
 .page-header {
@@ -171,7 +173,7 @@ button:active {
 /* Grid de resumen */
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
 }
 
@@ -517,6 +519,8 @@ tbody tr:hover {
 .app-content {
   flex: 1;
   min-width: 0;
+  display: flex;
+  justify-content: center;
 }
 
 @media (max-width: 800px) {
@@ -540,18 +544,16 @@ tbody tr:hover {
 /* -----------------------------
    GRÁFICOS
 ----------------------------- */
-.charts-grid {
+.summary-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(300px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
 }
 
 .chart-card {
-  min-height: 380px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  min-height: 420px;
 }
+
 .chart-card h2 {
   margin: 0 0 18px;
   font-size: 20px;
@@ -906,4 +908,10 @@ tbody tr:hover {
   border-radius: 50%;
   margin-right: 8px;
   animation: livePulse 1.5s infinite;
+}
+
+.status-badge.inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
 }
