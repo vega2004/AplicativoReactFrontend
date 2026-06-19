@@ -1,5 +1,6 @@
 import { useDashboardChart } from '../hooks/useDashboardChart';
 
+// Importaciones apuntando exactamente a tus componentes de la estructura
 import { TemperatureChart }   from '../components/dashboard/TemperatureChart';
 import { HumidityChart }      from '../components/dashboard/HumidityChart';
 import { RecordsByIpChart }   from '../components/dashboard/RecordsByIpChart';
@@ -11,7 +12,7 @@ const Spinner = () => (
 );
 
 export const GraficasPage = () => {
-  // El hook hace polling automático al backend conectado a la ESP32
+  // El hook hace polling automático al backend de la ESP32 cada 3 segundos
   const { charts, loading, error } = useDashboardChart();
 
   // Loader inicial (solo la primera vez si no hay datos en caché)
@@ -35,6 +36,17 @@ export const GraficasPage = () => {
 
   if (!charts) return null;
 
+  // ==========================================
+  // FILTRADO DE DATOS (MÁXIMO 10 MÁS RECIENTES)
+  // ==========================================
+  // Con .slice(-10) tomamos únicamente los últimos 10 elementos de cada array (los más nuevos en el tiempo).
+  // Si traen menos de 10, se muestran los que haya sin romperse.
+  const temperaturaFiltrada = (charts.temperaturaPorTiempo || []).slice(-10);
+  const humedadFiltrada     = (charts.humedadPorTiempo     || []).slice(-10);
+  const registrosFiltrados   = (charts.registrosPorIp       || []).slice(-10);
+  const paquetesFiltrados    = (charts.paquetesPorDia       || []).slice(-10);
+  const promedioFiltrado     = (charts.promedioPorIp        || []).slice(-10);
+
   return (
     <div className="min-h-screen bg-[#060e1a] p-6 md:p-10 text-slate-100 font-sans">
       
@@ -45,7 +57,7 @@ export const GraficasPage = () => {
             Panel de Control ESP32
           </h1>
           <p className="text-slate-400 text-sm mt-1">
-            Telemetría de hardware y análisis de red en tiempo real.
+            Telemetría de hardware y análisis de red en tiempo real (Últimos 10 registros).
           </p>
         </div>
         
@@ -55,7 +67,7 @@ export const GraficasPage = () => {
         </div>
       </div>
 
-      {/* Grid de Gráficas en Barras */}
+      {/* Grid de Gráficas en Barras Modernas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         
         {/* Temperatura */}
@@ -64,7 +76,7 @@ export const GraficasPage = () => {
             <h3 className="text-slate-200 font-bold text-sm tracking-wide uppercase">Temperatura</h3>
             <span className="text-xs text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">°C Sensor</span>
           </div>
-          <div className="h-56 w-full"><TemperatureChart data={charts.temperaturaPorTiempo} /></div>
+          <div className="h-56 w-full"><TemperatureChart data={temperaturaFiltrada} /></div>
         </div>
 
         {/* Humedad */}
@@ -73,7 +85,7 @@ export const GraficasPage = () => {
             <h3 className="text-slate-200 font-bold text-sm tracking-wide uppercase">Humedad Ambiente</h3>
             <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">% RH</span>
           </div>
-          <div className="h-56 w-full"><HumidityChart data={charts.humedadPorTiempo} /></div>
+          <div className="h-56 w-full"><HumidityChart data={humedadFiltrada} /></div>
         </div>
 
         {/* Registros por IP */}
@@ -82,7 +94,7 @@ export const GraficasPage = () => {
             <h3 className="text-slate-200 font-bold text-sm tracking-wide uppercase">Peticiones por IP</h3>
             <span className="text-xs text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded">Hits</span>
           </div>
-          <div className="h-56 w-full"><RecordsByIpChart data={charts.registrosPorIp} /></div>
+          <div className="h-56 w-full"><RecordsByIpChart data={registrosFiltrados} /></div>
         </div>
 
         {/* Paquetes por Día */}
@@ -91,7 +103,7 @@ export const GraficasPage = () => {
             <h3 className="text-slate-200 font-bold text-sm tracking-wide uppercase">Tráfico de Paquetes</h3>
             <span className="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Pkts</span>
           </div>
-          <div className="h-56 w-full"><PackagesByDayChart data={charts.paquetesPorDia} /></div>
+          <div className="h-56 w-full"><PackagesByDayChart data={paquetesFiltrados} /></div>
         </div>
 
         {/* Promedio por IP */}
@@ -100,7 +112,7 @@ export const GraficasPage = () => {
             <h3 className="text-slate-200 font-bold text-sm tracking-wide uppercase">Rendimiento / Latencia Global por Nodo</h3>
             <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">ms</span>
           </div>
-          <div className="h-60 w-full"><AverageByIpChart data={charts.promedioPorIp} /></div>
+          <div className="h-60 w-full"><AverageByIpChart data={promedioFiltrado} /></div>
         </div>
 
       </div>
