@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { filtrarDatos } from '../api/datosApi';
 
+const TIEMPO_MAXIMO_INACTIVO_SEGUNDOS = 30;
+const INTERVALO_ACTUALIZACION_MS = 10000;
+
 export const useDispositivos = () => {
   const [dispositivos, setDispositivos] = useState([]);
   const [page, setPage] = useState(1);
@@ -39,16 +42,29 @@ export const useDispositivos = () => {
         return acc;
       }, {});
 
-      const lista = Object.values(agrupados).map((item) => ({
-        clientId: item.clientId,
-        ipDispositivo: item.ipDispositivo,
-        temperatura: item.temperatura,
-        humedad: item.humedad,
-        fechaEnvio: item.fechaEnvio,
-        fechaRecepcion: item.fechaRecepcion,
-        ipOrigen: item.ipOrigen,
-        ipContenedor: item.ipContenedor,
-      }));
+      const ahora = new Date();
+
+      const lista = Object.values(agrupados).map((item) => {
+        const ultimaRecepcion = new Date(item.fechaRecepcion);
+        const diferenciaSegundos = (ahora - ultimaRecepcion) / 1000;
+
+        const activo =
+          diferenciaSegundos <= TIEMPO_MAXIMO_INACTIVO_SEGUNDOS;
+
+        return {
+          clientId: item.clientId,
+          ipDispositivo: item.ipDispositivo,
+          temperatura: item.temperatura,
+          humedad: item.humedad,
+          fechaEnvio: item.fechaEnvio,
+          fechaRecepcion: item.fechaRecepcion,
+          ipOrigen: item.ipOrigen,
+          ipContenedor: item.ipContenedor,
+
+          activo,
+          segundosSinEnviar: Math.floor(diferenciaSegundos),
+        };
+      });
 
       setDispositivos(lista);
     } catch (err) {
@@ -61,6 +77,12 @@ export const useDispositivos = () => {
 
   useEffect(() => {
     cargarDispositivos();
+
+    const intervalId = setInterval(() => {
+      cargarDispositivos();
+    }, INTERVALO_ACTUALIZACION_MS);
+
+    return () => clearInterval(intervalId);
   }, [cargarDispositivos]);
 
   const totalPages = Math.ceil(dispositivos.length / pageSize);

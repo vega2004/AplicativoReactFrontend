@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getDashboardGraficas } from '../api/dashboardApi';
 
+const INTERVALO_ACTUALIZACION_MS = 10000;
+
 export const useDashboardChart = () => {
   const [charts, setCharts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,12 @@ export const useDashboardChart = () => {
 
   useEffect(() => {
     cargarGraficas();
+
+    const intervalId = setInterval(() => {
+      cargarGraficas();
+    }, INTERVALO_ACTUALIZACION_MS);
+
+    return () => clearInterval(intervalId);
   }, [cargarGraficas]);
 
   return {
