@@ -34,7 +34,7 @@ export const SummaryCards = ({ summary }) => {
       <SummaryCard
         title="Clientes detectados"
         value={summary.totalClientesDetectados ?? 0}
-        description="ESP32 identificadas"
+        description="ESP32 registradas"
       />
 
       <SummaryCard
