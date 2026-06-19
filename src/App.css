@@ -668,16 +668,6 @@ tbody tr:hover {
   background: transparent;
 }
 
-.recharts-line-curve,
-.recharts-area-curve {
-  stroke-width: 3;
-  filter: drop-shadow(0 0 6px var(--accent-glow));
-}
-
-.recharts-dot {
-  stroke: var(--bg-card);
-}
-
 .recharts-tooltip-wrapper .recharts-default-tooltip {
   background: rgba(15, 23, 42, 0.95) !important;
   backdrop-filter: blur(8px);
@@ -699,26 +689,7 @@ tbody tr:hover {
 
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: rgba(148, 163, 184, 0.1important;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(37, 99, 235, 0.4) !important;
-  border-radius: 14px !important;
-  padding: 10px 14px !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  color: var(--text-primary) !important;
-}
-
-.recharts-cartesian-axis-tick-value {
-  fill: var(--text-secondary) !important;
-}
-
-.recharts-cartesian-axis-line,
-.recharts-cartesian-axis-tick-line {
-  stroke: var(--border-color) !important;
-}
-
-.recharts-cartesian-grid-horizontal line,
-.recharts) !important;
+  stroke: rgba(148, 163, 184, 0.25) !important;
   stroke-dasharray: 3 3;
 }
 
@@ -727,18 +698,13 @@ tbody tr:hover {
 }
 
 .recharts-legend-item {
-  opacity: 0.7;
+  opacity: 0.85;
   transition: 0.2s;
 }
 
 .recharts-legend-item:hover {
   opacity: 1;
   transform: scale(1.05);
-}
-
-.recharts-brush-slide {
-  fill: var(--bg-input) !important;
-  stroke: var(--accent) !important;
 }
 
 .chart-card::after {
@@ -754,11 +720,6 @@ tbody tr:hover {
 .chart-card:hover::after {
   opacity: 1;
 }
-
-.chart-card:hover .recharts-line-curve {
-  stroke-width: 4;
-}
-
 /* =============================
    DISPOSITIVOS
 ============================= */

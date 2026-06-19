@@ -21,7 +21,11 @@ export const RecordsByIpChart = ({ data }) => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="total" name="Total registros" />
+          <Bar
+  dataKey="total"
+  name="Total registros"
+  fill="#2563eb"
+/>
         </BarChart>
       </ResponsiveContainer>
     </div>

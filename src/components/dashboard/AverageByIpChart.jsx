@@ -21,14 +21,17 @@ export const AverageByIpChart = ({ data }) => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar
-            dataKey="temperaturaPromedio"
-            name="Temperatura promedio"
-          />
-          <Bar
-            dataKey="humedadPromedio"
-            name="Humedad promedio"
-          />
+        <Bar
+  dataKey="temperaturaPromedio"
+  name="Temperatura promedio"
+  fill="#f97316"
+/>
+
+<Bar
+  dataKey="humedadPromedio"
+  name="Humedad promedio"
+  fill="#38bdf8"
+/>
         </BarChart>
       </ResponsiveContainer>
     </div>
