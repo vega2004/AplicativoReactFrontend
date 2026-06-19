@@ -22,6 +22,8 @@ export const RegistrosPage = () => {
           <h1>Registros de sensores</h1>
           <p>Consulta lecturas recibidas desde las ESP32.</p>
         </div>
+
+        <button onClick={cargarDatos}>Actualizar</button>
       </div>
 
       <DatosFilters
