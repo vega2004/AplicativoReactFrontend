@@ -24,7 +24,11 @@ export const DashboardPage = () => {
   };
 
   if (loading) {
-    return <p>Cargando dashboard...</p>;
+    return (
+      <div className="page">
+        <p>Cargando dashboard...</p>
+      </div>
+    );
   }
 
   if (error) {
@@ -44,13 +48,17 @@ export const DashboardPage = () => {
           <p>Monitoreo de temperatura, humedad y dispositivos conectados.</p>
         </div>
 
-        <button onClick={actualizarTodo}>Actualizar</button>
+        <button onClick={actualizarTodo}>
+          Actualizar
+        </button>
       </div>
 
       <SummaryCards summary={summary} />
 
       <div className="dashboard-section">
-        {loadingRegistros && <p>Cargando últimos registros...</p>}
+        {loadingRegistros && (
+          <p>Cargando últimos registros...</p>
+        )}
 
         {errorRegistros && (
           <p className="error-message">{errorRegistros}</p>

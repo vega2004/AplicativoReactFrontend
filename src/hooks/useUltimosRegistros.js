@@ -1,14 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { filtrarDatos } from '../api/datosApi';
 
+const INTERVALO_ACTUALIZACION_MS = 10000;
+
 export const useUltimosRegistros = () => {
   const [registros, setRegistros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const cargarUltimosRegistros = useCallback(async () => {
+  const cargarUltimosRegistros = useCallback(async (mostrarLoading = false) => {
     try {
-      setLoading(true);
+      if (mostrarLoading) {
+        setLoading(true);
+      }
+
       setError('');
 
       const result = await filtrarDatos({
@@ -26,13 +31,19 @@ export const useUltimosRegistros = () => {
   }, []);
 
   useEffect(() => {
-    cargarUltimosRegistros();
+    cargarUltimosRegistros(true);
+
+    const intervalId = setInterval(() => {
+      cargarUltimosRegistros(false);
+    }, INTERVALO_ACTUALIZACION_MS);
+
+    return () => clearInterval(intervalId);
   }, [cargarUltimosRegistros]);
 
   return {
     registros,
     loading,
     error,
-    reload: cargarUltimosRegistros,
+    reload: () => cargarUltimosRegistros(true),
   };
 };
