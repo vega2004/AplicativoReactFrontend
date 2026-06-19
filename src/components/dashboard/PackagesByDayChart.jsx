@@ -28,7 +28,11 @@ export const PackagesByDayChart = ({ data }) => {
             labelFormatter={(value) => formatDateTime(value)}
           />
           <Legend />
-          <Bar dataKey="total" name="Total paquetes" />
+          <Bar
+  dataKey="total"
+  name="Total paquetes"
+  fill="#818cf8"
+/>
         </BarChart>
       </ResponsiveContainer>
     </div>
