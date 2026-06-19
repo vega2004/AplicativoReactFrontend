@@ -8,7 +8,6 @@ export const useDashboardSummary = () => {
 
   const cargarResumen = useCallback(async () => {
     try {
-      setLoading(true);
       setError('');
 
       const data = await getDashboardResumen();
@@ -23,6 +22,12 @@ export const useDashboardSummary = () => {
 
   useEffect(() => {
     cargarResumen();
+
+    const intervalId = setInterval(() => {
+      cargarResumen();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
   }, [cargarResumen]);
 
   return {

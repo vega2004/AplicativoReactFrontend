@@ -61,7 +61,6 @@ export const useDispositivos = () => {
           ipOrigen: item.ipOrigen,
           ipContenedor: item.ipContenedor,
 
-          // Estado calculado en frontend
           activo,
           segundosSinEnviar: Math.floor(diferenciaSegundos),
         };

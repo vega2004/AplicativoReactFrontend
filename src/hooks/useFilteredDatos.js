@@ -48,17 +48,15 @@ export const useFilteredDatos = () => {
     }
   }, [filtros]);
 
-  useEffect(() => {
-    cargarDatos();
-  }, [cargarDatos]);
+ useEffect(() => {
+  cargarDatos();
 
-  const actualizarFiltro = (name, value) => {
-    setFiltros((prev) => ({
-      ...prev,
-      [name]: value,
-      page: name === 'page' ? value : 1,
-    }));
-  };
+  const intervalId = setInterval(() => {
+    cargarDatos();
+  }, 10000);
+
+  return () => clearInterval(intervalId);
+}, [cargarDatos]);
 
   const limpiarFiltros = () => {
     setFiltros({
