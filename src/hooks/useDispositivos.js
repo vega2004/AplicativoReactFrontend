@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { filtrarDatos } from '../api/datosApi';
 
+const TIEMPO_MAXIMO_INACTIVO_SEGUNDOS = 30;
+const INTERVALO_ACTUALIZACION_MS = 10000;
+
 export const useDispositivos = () => {
   const [dispositivos, setDispositivos] = useState([]);
   const [page, setPage] = useState(1);
@@ -8,9 +11,12 @@ export const useDispositivos = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const cargarDispositivos = useCallback(async () => {
+  const cargarDispositivos = useCallback(async (mostrarLoading = false) => {
     try {
-      setLoading(true);
+      if (mostrarLoading) {
+        setLoading(true);
+      }
+
       setError('');
 
       const result = await filtrarDatos({
@@ -39,16 +45,30 @@ export const useDispositivos = () => {
         return acc;
       }, {});
 
-      const lista = Object.values(agrupados).map((item) => ({
-        clientId: item.clientId,
-        ipDispositivo: item.ipDispositivo,
-        temperatura: item.temperatura,
-        humedad: item.humedad,
-        fechaEnvio: item.fechaEnvio,
-        fechaRecepcion: item.fechaRecepcion,
-        ipOrigen: item.ipOrigen,
-        ipContenedor: item.ipContenedor,
-      }));
+      const ahora = new Date();
+
+      const lista = Object.values(agrupados).map((item) => {
+        const ultimaRecepcion = new Date(item.fechaRecepcion);
+        const diferenciaSegundos = Math.floor((ahora - ultimaRecepcion) / 1000);
+
+        const activo =
+          diferenciaSegundos <= TIEMPO_MAXIMO_INACTIVO_SEGUNDOS;
+
+        return {
+          clientId: item.clientId,
+          ipDispositivo: item.ipDispositivo,
+          temperatura: item.temperatura,
+          humedad: item.humedad,
+          fechaEnvio: item.fechaEnvio,
+          fechaRecepcion: item.fechaRecepcion,
+          ipOrigen: item.ipOrigen,
+          ipContenedor: item.ipContenedor,
+
+          activo,
+          estado: activo ? 'Activo' : 'Inactivo',
+          segundosSinEnviar: diferenciaSegundos,
+        };
+      });
 
       setDispositivos(lista);
     } catch (err) {
@@ -60,7 +80,13 @@ export const useDispositivos = () => {
   }, []);
 
   useEffect(() => {
-    cargarDispositivos();
+    cargarDispositivos(true);
+
+    const intervalId = setInterval(() => {
+      cargarDispositivos(false);
+    }, INTERVALO_ACTUALIZACION_MS);
+
+    return () => clearInterval(intervalId);
   }, [cargarDispositivos]);
 
   const totalPages = Math.ceil(dispositivos.length / pageSize);
@@ -70,6 +96,9 @@ export const useDispositivos = () => {
     page * pageSize
   );
 
+  const totalActivos = dispositivos.filter((item) => item.activo).length;
+  const totalInactivos = dispositivos.filter((item) => !item.activo).length;
+
   return {
     dispositivos,
     dispositivosPaginados,
@@ -78,7 +107,9 @@ export const useDispositivos = () => {
     page,
     pageSize,
     totalPages,
+    totalActivos,
+    totalInactivos,
     setPage,
-    reload: cargarDispositivos,
+    reload: () => cargarDispositivos(true),
   };
 };

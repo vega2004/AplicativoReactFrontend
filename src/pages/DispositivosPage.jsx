@@ -9,6 +9,8 @@ export const DispositivosPage = () => {
     error,
     page,
     totalPages,
+    totalActivos,
+    totalInactivos,
     setPage,
     reload,
   } = useDispositivos();
@@ -35,10 +37,27 @@ export const DispositivosPage = () => {
       <div className="page-header">
         <div>
           <h1>Dispositivos ESP32</h1>
-          <p>Listado de sensores detectados por ClientId.</p>
+          <p>Listado de sensores detectados por identificador de dispositivo.</p>
         </div>
 
         <button onClick={reload}>Actualizar</button>
+      </div>
+
+      <div className="devices-summary">
+        <div className="device-summary-card">
+          <span>Total dispositivos</span>
+          <strong>{dispositivos.length}</strong>
+        </div>
+
+        <div className="device-summary-card active">
+          <span>Activos</span>
+          <strong>{totalActivos}</strong>
+        </div>
+
+        <div className="device-summary-card inactive">
+          <span>Inactivos</span>
+          <strong>{totalInactivos}</strong>
+        </div>
       </div>
 
       {dispositivos.length === 0 ? (
@@ -49,14 +68,29 @@ export const DispositivosPage = () => {
         <>
           <div className="devices-grid">
             {dispositivosPaginados.map((item) => (
-              <div className="device-card" key={item.clientId}>
+              <div
+                className={
+                  item.activo
+                    ? 'device-card'
+                    : 'device-card device-card-inactive'
+                }
+                key={item.clientId}
+              >
                 <div className="device-card-header">
                   <div>
                     <p>Identificador</p>
                     <h2>{item.clientId}</h2>
                   </div>
 
-                  <span className="status-badge">Activo</span>
+                  <span
+                    className={
+                      item.activo
+                        ? 'status-badge'
+                        : 'status-badge inactive'
+                    }
+                  >
+                    {item.estado}
+                  </span>
                 </div>
 
                 <div className="device-info-grid">
@@ -78,6 +112,11 @@ export const DispositivosPage = () => {
                   <div>
                     <span>Última recepción</span>
                     <strong>{formatDateTime(item.fechaRecepcion)}</strong>
+                  </div>
+
+                  <div>
+                    <span>Tiempo sin enviar</span>
+                    <strong>{item.segundosSinEnviar} segundos</strong>
                   </div>
 
                   <div>
