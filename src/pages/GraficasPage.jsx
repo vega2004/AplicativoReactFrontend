@@ -12,10 +12,8 @@ const Spinner = () => (
 );
 
 export const GraficasPage = () => {
-  // El hook hace polling automático al backend de la ESP32 cada 3 segundos
   const { charts, loading, error } = useDashboardChart();
 
-  // Loader inicial (solo la primera vez si no hay datos en caché)
   if (loading && !charts) return (
     <div className="min-h-screen bg-[#060e1a] flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
@@ -36,11 +34,7 @@ export const GraficasPage = () => {
 
   if (!charts) return null;
 
-  // ==========================================
   // FILTRADO DE DATOS (MÁXIMO 10 MÁS RECIENTES)
-  // ==========================================
-  // Con .slice(-10) tomamos únicamente los últimos 10 elementos de cada array (los más nuevos en el tiempo).
-  // Si traen menos de 10, se muestran los que haya sin romperse.
   const temperaturaFiltrada = (charts.temperaturaPorTiempo || []).slice(-10);
   const humedadFiltrada     = (charts.humedadPorTiempo     || []).slice(-10);
   const registrosFiltrados   = (charts.registrosPorIp       || []).slice(-10);
@@ -48,16 +42,19 @@ export const GraficasPage = () => {
   const promedioFiltrado     = (charts.promedioPorIp        || []).slice(-10);
 
   return (
-    <div className="min-h-screen bg-[#060e1a] p-6 md:p-10 text-slate-100 font-sans">
+    /* CAMBIO CLAVE: Usamos w-full (ancho completo), items-start y text-left 
+      para asegurarnos de que todo se pegue por completo al borde del menú lateral izquierdo.
+    */
+    <div className="min-h-screen w-full bg-[#060e1a] p-6 md:p-8 flex flex-col justify-start items-start text-left">
       
-      {/* Header */}
-      <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-6">
+      {/* Header pegado al límite del menú izquierdo */}
+      <div className="w-full mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-6">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-            Panel de Control ESP32
+          <h1 className="text-white text-3xl font-bold tracking-tight">
+            Gráficas
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
-            Telemetría de hardware y análisis de red en tiempo real (Últimos 10 registros).
+          <p className="text-gray-400 text-sm mt-1">
+            Visualización de temperatura, humedad y actividad por dispositivo.
           </p>
         </div>
         
@@ -67,13 +64,13 @@ export const GraficasPage = () => {
         </div>
       </div>
 
-      {/* Grid de Gráficas en Barras Modernas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Grid de Gráficas expandido a todo el ancho disponible */}
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Temperatura */}
         <div className="rounded-2xl bg-[#081325] border border-slate-800 p-5 flex flex-col gap-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-slate-200 font-bold text-sm tracking-wide uppercase">Temperatura</h3>
+            <h3 className="text-slate-200 font-bold text-sm tracking-wide uppercase">Temperatura por tiempo</h3>
             <span className="text-xs text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">°C Sensor</span>
           </div>
           <div className="h-56 w-full"><TemperatureChart data={temperaturaFiltrada} /></div>
