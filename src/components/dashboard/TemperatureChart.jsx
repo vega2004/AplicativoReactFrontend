@@ -12,6 +12,13 @@ import {
 import { formatDateTime } from '../../utils/dateUtils';
 
 export const TemperatureChart = ({ data }) => {
+  // 1. Validamos que data sea un array. Si no, usamos uno vacío.
+  const registrosOriginales = data || [];
+
+  // 2. Filtramos para quedarnos ÚNICAMENTE con los últimos 10 registros más recientes.
+  // .slice(-10) toma los últimos 10 elementos del array (cronológicamente los más nuevos).
+  const datosFiltrados = registrosOriginales.slice(-10);
+
   return (
     <div className="chart-card bg-[#081325] p-2 rounded-xl border border-slate-800">
       <h2 className="text-slate-200 font-semibold text-sm mb-4 text-center">
@@ -19,15 +26,16 @@ export const TemperatureChart = ({ data }) => {
       </h2>
 
       <ResponsiveContainer width="100%" height={300}>
-        {/* Cambiado de LineChart a BarChart sin romper las propiedades de datos */}
-        <BarChart data={data || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-          {/* Cuadrícula sutil adaptada al fondo oscuro */}
+        {/* Le pasamos los datos filtrados (máximo 10 barras espaciadas) */}
+        <BarChart data={datosFiltrados} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          
+          {/* Cuadrícula sutil de fondo */}
           <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
           
           <XAxis
             dataKey="fecha"
             stroke="#64748b"
-            fontSize={12}
+            fontSize={11} // Reducido un punto para dar más aire al texto largo de fecha
             tickLine={false}
             tickFormatter={(value) => formatDateTime(value)}
           />
@@ -43,11 +51,12 @@ export const TemperatureChart = ({ data }) => {
           
           <Legend wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} />
           
-          {/* Cambiado de Line a Bar: usa tus keys originales 'temperatura' */}
+          {/* La Barra: Al ser máximo 10, barSize controla el grosor ideal para que no se amontonen */}
           <Bar
             dataKey="temperatura"
             name="Temperatura °C"
             fill="#22d3ee"
+            barSize={35} // Ajusta el ancho de la barra (en píxeles) para que queden perfectamente separadas
             radius={[4, 4, 0, 0]}
             isAnimationActive={true}
             animationDuration={400}
