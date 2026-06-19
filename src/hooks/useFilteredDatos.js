@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { filtrarDatos } from '../api/datosApi';
 
+const INTERVALO_ACTUALIZACION_MS = 10000;
+
 export const useFilteredDatos = () => {
   const [filtros, setFiltros] = useState({
     ipInicio: '',
@@ -19,44 +21,64 @@ export const useFilteredDatos = () => {
     data: [],
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const cargarDatos = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError('');
+  const cargarDatos = useCallback(
+    async (mostrarLoading = false) => {
+      try {
+        if (mostrarLoading) {
+          setLoading(true);
+        }
 
-      const params = {
-        page: filtros.page,
-        pageSize: filtros.pageSize,
-      };
+        setError('');
 
-      if (filtros.ipInicio) params.ipInicio = filtros.ipInicio;
-      if (filtros.ipFin) params.ipFin = filtros.ipFin;
-      if (filtros.clientId) params.clientId = filtros.clientId;
-      if (filtros.fechaInicio) params.fechaInicio = filtros.fechaInicio;
-      if (filtros.fechaFin) params.fechaFin = filtros.fechaFin;
+        const params = {
+          page: filtros.page,
+          pageSize: filtros.pageSize,
+        };
 
-      const data = await filtrarDatos(params);
-      setResult(data);
-    } catch (err) {
-      console.error(err);
-      setError('No se pudieron cargar los registros');
-    } finally {
-      setLoading(false);
-    }
-  }, [filtros]);
+        if (filtros.ipInicio) params.ipInicio = filtros.ipInicio;
+        if (filtros.ipFin) params.ipFin = filtros.ipFin;
+        if (filtros.clientId) params.clientId = filtros.clientId;
+        if (filtros.fechaInicio) params.fechaInicio = filtros.fechaInicio;
+        if (filtros.fechaFin) params.fechaFin = filtros.fechaFin;
 
- useEffect(() => {
-  cargarDatos();
+        const response = await filtrarDatos(params);
 
-  const intervalId = setInterval(() => {
-    cargarDatos();
-  }, 10000);
+        setResult({
+          total: response.total ?? 0,
+          page: response.page ?? filtros.page,
+          pageSize: response.pageSize ?? filtros.pageSize,
+          data: response.data ?? [],
+        });
+      } catch (err) {
+        console.error(err);
+        setError('No se pudieron cargar los registros');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filtros]
+  );
 
-  return () => clearInterval(intervalId);
-}, [cargarDatos]);
+  useEffect(() => {
+    cargarDatos(true);
+
+    const intervalId = setInterval(() => {
+      cargarDatos(false);
+    }, INTERVALO_ACTUALIZACION_MS);
+
+    return () => clearInterval(intervalId);
+  }, [cargarDatos]);
+
+  const actualizarFiltro = (name, value) => {
+    setFiltros((prev) => ({
+      ...prev,
+      [name]: value,
+      page: name === 'page' ? value : 1,
+    }));
+  };
 
   const limpiarFiltros = () => {
     setFiltros({
@@ -77,6 +99,6 @@ export const useFilteredDatos = () => {
     error,
     actualizarFiltro,
     limpiarFiltros,
-    cargarDatos,
+    cargarDatos: () => cargarDatos(true),
   };
 };
